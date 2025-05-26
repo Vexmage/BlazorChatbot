@@ -1,0 +1,46 @@
+﻿@page "/chat"
+@inject BlazorChatbot.Services.OpenAIChatService ChatService
+
+<h3>Chat with AI</h3>
+
+<div class="chat-box">
+    @foreach (var msg in messages)
+    {
+        <div class="chat-message @(msg.Role == "User" ? "user" : "ai")">
+            <strong>@msg.Role:</strong> @msg.Content
+        </div>
+    }
+</div>
+
+<div class="input-row">
+    <input @bind="userMessage" @bind:event="oninput" placeholder="Say something..." />
+    <button @onclick="SendMessage">Send</button>
+</div>
+
+@code {
+    private string userMessage = string.Empty;
+    private List<ChatMessage> messages = new();
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(userMessage)) return;
+
+        messages.Add(new ChatMessage("User", userMessage));
+        var reply = await ChatService.SendMessageAsync(userMessage);
+        messages.Add(new ChatMessage("AI", reply));
+
+        userMessage = string.Empty;
+    }
+
+    public class ChatMessage
+    {
+        public string Role { get; set; }
+        public string Content { get; set; }
+
+        public ChatMessage(string role, string content)
+        {
+            Role = role;
+            Content = content;
+        }
+    }
+}
