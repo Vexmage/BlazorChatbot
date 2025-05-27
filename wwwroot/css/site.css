@@ -100,3 +100,6 @@ a, .btn-link {
     gap: 0.5rem;
 }
 
+.navbar-brand img {
+    vertical-align: middle;
+}
