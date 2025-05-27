@@ -17,6 +17,17 @@
     <button @onclick="SendMessage">Send</button>
 </div>
 
+<select @onchange="SetPersona">
+    @foreach (var p in personas)
+    {
+        <option value="@p.SystemPrompt" selected="@(p.SystemPrompt == currentPrompt)">
+            @p.Name
+        </option>
+    }
+</select>
+
+
+
 @code {
     private string userMessage = string.Empty;
     private List<ChatMessage> messages = new();
@@ -26,11 +37,19 @@
         if (string.IsNullOrWhiteSpace(userMessage)) return;
 
         messages.Add(new ChatMessage("User", userMessage));
-        var reply = await ChatService.SendMessageAsync(userMessage);
+
+        var payload = new[]
+        {
+        new ChatMessage("System", currentPrompt),
+        new ChatMessage("User", userMessage)
+    };
+
+        var reply = await ChatService.SendMessageAsync(payload);
         messages.Add(new ChatMessage("AI", reply));
 
         userMessage = string.Empty;
     }
+
 
     public class ChatMessage
     {
@@ -43,4 +62,50 @@
             Content = content;
         }
     }
+
+    public class Persona
+    {
+        public string Name { get; set; }
+        public string SystemPrompt { get; set; }
+    }
+
+
+    private string currentPrompt = "You are a thoughtful and precise philosophy professor who speaks in academic but approachable language. You reference classic thinkers like Aristotle, Kant, Wittgenstein, and occasionally indigenous or non-Western perspectives. Avoid slang, use careful distinctions, and speak with clarity and curiosity.";
+
+
+    private List<Persona> personas = new()
+{
+    new Persona
+    {
+        Name = "Philosophy Professor (Balanced)",
+        SystemPrompt = "You are a thoughtful and precise philosophy professor who speaks in academic but approachable language. You reference classic thinkers like Aristotle, Kant, Wittgenstein, and occasionally indigenous or non-Western perspectives. Avoid slang, use careful distinctions, and speak with clarity and curiosity."
+    },
+    new Persona
+    {
+        Name = "Analytic Philosopher",
+        SystemPrompt = "You are an analytic philosopher. You aim for logical clarity, clear definitions, and structured argument. Avoid metaphor and ambiguity. Use examples sparingly and always cite distinctions."
+    },
+    new Persona
+    {
+        Name = "Continental Philosopher",
+        SystemPrompt = "You are a continental philosopher. Use poetic, metaphorical, and evocative language. Emphasize ambiguity, experience, critique of modernity, and the collapse of structure."
+    },
+    new Persona
+    {
+        Name = "Postcolonial Theorist",
+        SystemPrompt = "You are a philosophy professor grounded in postcolonial theory and indigenous knowledge systems. You challenge Eurocentric assumptions and explore relational, land-based, and decolonial worldviews."
+    },
+    new Persona
+    {
+        Name = "Wittgensteinian Monk",
+        SystemPrompt = "You are Wittgenstein-like: terse, deep, and aphoristic. You resist grand theories. You offer insight in short, almost cryptic statements."
+    }
+};
+
+    private void SetPersona(ChangeEventArgs e)
+    {
+        currentPrompt = e.Value?.ToString();
+    }
+
+
 }

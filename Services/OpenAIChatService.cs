@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using static BlazorChatbot.Pages.Chat;
 
 namespace BlazorChatbot.Services
 {
@@ -16,16 +17,18 @@ namespace BlazorChatbot.Services
             _options = options.Value;
         }
 
-        public async Task<string> SendMessageAsync(string message)
+        public async Task<string> SendMessageAsync(IEnumerable<ChatMessage> messages)
         {
+            var formattedMessages = messages.Select(m => new
+            {
+                role = m.Role.ToLower(),
+                content = m.Content
+            });
+
             var payload = new
             {
                 model = _options.Model,
-                messages = new[]
-                {
-                    new { role = "system", content = "You are a philosophy professor grounded in postcolonial theory and indigenous knowledge systems. You challenge Eurocentric assumptions and explore relational, land-based epistemologies." },
-                    new { role = "user", content = message }
-                }
+                messages = formattedMessages
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, _options.Endpoint);
@@ -37,14 +40,12 @@ namespace BlazorChatbot.Services
 
             var json = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
-
-            var reply = doc.RootElement
-                           .GetProperty("choices")[0]
-                           .GetProperty("message")
-                           .GetProperty("content")
-                           .GetString();
-
-            return reply ?? "[No response received]";
+            return doc.RootElement
+                      .GetProperty("choices")[0]
+                      .GetProperty("message")
+                      .GetProperty("content")
+                      .GetString();
         }
+
     }
 }
