@@ -2,6 +2,7 @@
 @inject BlazorChatbot.Services.OpenAIChatService ChatService
 
 <h3>Chat with AI</h3>
+<p><strong>Current Persona:</strong> @currentPersonaName</p>
 
 <div class="chat-box">
     @foreach (var msg in messages)
@@ -31,6 +32,8 @@
 @code {
     private string userMessage = string.Empty;
     private List<ChatMessage> messages = new();
+
+    private string currentPersonaName = "Philosophy Professor (Balanced)";
 
     private async Task SendMessage()
     {
@@ -104,8 +107,13 @@
 
     private void SetPersona(ChangeEventArgs e)
     {
-        currentPrompt = e.Value?.ToString();
+        var selectedPrompt = e.Value?.ToString();
+        currentPrompt = selectedPrompt ?? string.Empty;
+
+        var selected = personas.FirstOrDefault(p => p.SystemPrompt == selectedPrompt);
+        currentPersonaName = selected?.Name ?? "Unknown Persona";
     }
+
 
 
 }
