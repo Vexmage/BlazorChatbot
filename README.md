@@ -1,14 +1,16 @@
-# BlazorChatbot
+# 🦉 Philosobot
 
-A Blazor Server chatbot application that uses the OpenAI API to generate responses in real time. Built as part of a developer workshop on integrating AI into .NET applications, this project showcases how modern .NET (Blazor Server) can be used alongside AI tools to create conversational, vibe-oriented web applications.
+Philosobot is a Blazor Server chatbot that responds to your questions with philosophical nuance, distinct voice, and a touch of mystery. Built on top of OpenAI’s GPT API, it showcases how modern .NET and prompt engineering can work together to create conversational experiences.
+
 
 ## 🧠 Features
 
-- 🔌 .NET 8 / Blazor Server
-- 🤖 Integration with OpenAI Chat Completions API (`gpt-3.5-turbo`)
-- 💬 Live chat UI with user/AI message thread
-- 🎨 Clean, responsive styling using basic CSS
-- 🧪 Foundation for further exploration: personalities, memory, prompt tuning, etc.
+- ⚙️ Built with **Blazor Server (.NET 7)** for fast, interactive UI
+- 🗣️ **Persona-based chat** powered by OpenAI's Chat Completions API
+- 🎭 Multiple philosophical styles: analytic, continental, postcolonial, and more
+- 🎨 Branded UI with custom owl + brain logo (aka the Philosobird™)
+- 🧩 Fully extendable system for prompt tuning, theming, and future memory support
+
 
 ## 🚀 Getting Started
 
