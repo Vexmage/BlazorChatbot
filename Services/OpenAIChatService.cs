@@ -23,6 +23,7 @@ namespace BlazorChatbot.Services
                 model = _options.Model,
                 messages = new[]
                 {
+                    new { role = "system", content = "You are a philosophy professor grounded in postcolonial theory and indigenous knowledge systems. You challenge Eurocentric assumptions and explore relational, land-based epistemologies." },
                     new { role = "user", content = message }
                 }
             };
