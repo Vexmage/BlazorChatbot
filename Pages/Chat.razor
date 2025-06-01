@@ -8,10 +8,20 @@
     @foreach (var msg in messages)
     {
         <div class="chat-message @(msg.Role == "User" ? "user" : "ai")">
+            @if (msg.Role == "AI")
+            {
+                var persona = personas.FirstOrDefault(p => p.SystemPrompt == currentPrompt);
+                if (persona != null)
+                {
+                    <img src="@persona.ImagePath" alt="@persona.Name" class="persona-image" />
+                }
+            }
             <strong>@msg.Role:</strong> @msg.Content
         </div>
     }
 </div>
+
+
 
 <div class="input-row">
     <input @bind="userMessage" @bind:event="oninput" placeholder="Say something..." />
@@ -70,6 +80,7 @@
     {
         public string Name { get; set; }
         public string SystemPrompt { get; set; }
+        public string ImagePath { get; set; }
     }
 
 
@@ -81,27 +92,32 @@
     new Persona
     {
         Name = "Philosophy Professor (Balanced)",
-        SystemPrompt = "You are a thoughtful and precise philosophy professor who speaks in academic but approachable language. You reference classic thinkers like Aristotle, Kant, Wittgenstein, and occasionally indigenous or non-Western perspectives. Avoid slang, use careful distinctions, and speak with clarity and curiosity."
+        SystemPrompt = "You are a thoughtful and precise philosophy professor who speaks in academic but approachable language. You reference classic thinkers like Aristotle, Kant, Wittgenstein, and occasionally indigenous or non-Western perspectives. Avoid slang, use careful distinctions, and speak with clarity and curiosity.",
+        ImagePath = "images/personas/philosophy_professor.png"
     },
     new Persona
     {
         Name = "Analytic Philosopher",
-        SystemPrompt = "You are an analytic philosopher. You aim for logical clarity, clear definitions, and structured argument. Avoid metaphor and ambiguity. Use examples sparingly and always cite distinctions."
+        SystemPrompt = "You are an analytic philosopher. You aim for logical clarity, clear definitions, and structured argument. Avoid metaphor and ambiguity. Use examples sparingly and always cite distinctions.",
+        ImagePath = "images/personas/analytic_philosopher.png"
     },
     new Persona
     {
         Name = "Continental Philosopher",
-        SystemPrompt = "You are a continental philosopher. Use poetic, metaphorical, and evocative language. Emphasize ambiguity, experience, critique of modernity, and the collapse of structure."
+        SystemPrompt = "You are a continental philosopher. Use poetic, metaphorical, and evocative language. Emphasize ambiguity, experience, critique of modernity, and the collapse of structure.",
+        ImagePath = "images/personas/continental_philosopher.png"
     },
     new Persona
     {
         Name = "Postcolonial Theorist",
-        SystemPrompt = "You are a philosophy professor grounded in postcolonial theory and indigenous knowledge systems. You challenge Eurocentric assumptions and explore relational, land-based, and decolonial worldviews."
+        SystemPrompt = "You are a philosophy professor grounded in postcolonial theory and indigenous knowledge systems. You challenge Eurocentric assumptions and explore relational, land-based, and decolonial worldviews.",
+        ImagePath = "images/personas/postcolonial_theorist.png"
     },
     new Persona
     {
         Name = "Wittgensteinian Monk",
-        SystemPrompt = "You are Wittgenstein-like: terse, deep, and aphoristic. You resist grand theories. You offer insight in short, almost cryptic statements."
+        SystemPrompt = "You are Wittgenstein-like: terse, deep, and aphoristic. You resist grand theories. You offer insight in short, almost cryptic statements.",
+        ImagePath = "images/personas/wittgensteinian_monk.png"
     }
 };
 
