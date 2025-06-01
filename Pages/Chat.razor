@@ -10,7 +10,11 @@
         <div class="chat-message @(msg.Role == "User" ? "user" : "ai")">
             @if (msg.Role == "AI" && !string.IsNullOrWhiteSpace(msg.PersonaImagePath))
             {
-                <img src="@msg.PersonaImagePath" alt="Persona" class="persona-image" />
+                <div class="persona-container">
+                    <img src="@msg.PersonaImagePath" alt="Persona" class="persona-image" />
+                    <div class="persona-name">@msg.PersonaName</div>
+                </div>
+
             }
 
             <strong>@msg.Role:</strong> @msg.Content
@@ -60,7 +64,7 @@
         var persona = personas.FirstOrDefault(p => p.SystemPrompt == currentPrompt);
         var imagePath = persona?.ImagePath;
 
-        messages.Add(new ChatMessage("AI", reply, imagePath));
+        messages.Add(new ChatMessage("AI", reply, persona?.ImagePath, persona?.Name));
 
         userMessage = string.Empty;
     }
@@ -70,15 +74,18 @@
     {
         public string Role { get; set; }
         public string Content { get; set; }
-        public string? PersonaImagePath { get; set; } // ← Add this
+        public string? PersonaImagePath { get; set; }
+        public string? PersonaName { get; set; }
 
-        public ChatMessage(string role, string content, string? imagePath = null)
+        public ChatMessage(string role, string content, string? imagePath = null, string? personaName = null)
         {
             Role = role;
             Content = content;
             PersonaImagePath = imagePath;
+            PersonaName = personaName;
         }
     }
+
 
 
     public class Persona

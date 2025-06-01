@@ -103,6 +103,20 @@ a, .btn-link {
     margin: 0 auto 0.5rem auto;
 }
 
+.persona-container {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.persona-name {
+    font-size: 0.85rem;
+    color: #555;
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+
+
 .input-row {
     display: flex;
     gap: 0.5rem;
