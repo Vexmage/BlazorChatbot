@@ -8,14 +8,11 @@
     @foreach (var msg in messages)
     {
         <div class="chat-message @(msg.Role == "User" ? "user" : "ai")">
-            @if (msg.Role == "AI")
+            @if (msg.Role == "AI" && !string.IsNullOrWhiteSpace(msg.PersonaImagePath))
             {
-                var persona = personas.FirstOrDefault(p => p.SystemPrompt == currentPrompt);
-                if (persona != null)
-                {
-                    <img src="@persona.ImagePath" alt="@persona.Name" class="persona-image" />
-                }
+                <img src="@msg.PersonaImagePath" alt="Persona" class="persona-image" />
             }
+
             <strong>@msg.Role:</strong> @msg.Content
         </div>
     }
@@ -45,6 +42,7 @@
 
     private string currentPersonaName = "Philosophy Professor (Balanced)";
 
+
     private async Task SendMessage()
     {
         if (string.IsNullOrWhiteSpace(userMessage)) return;
@@ -58,7 +56,11 @@
     };
 
         var reply = await ChatService.SendMessageAsync(payload);
-        messages.Add(new ChatMessage("AI", reply));
+
+        var persona = personas.FirstOrDefault(p => p.SystemPrompt == currentPrompt);
+        var imagePath = persona?.ImagePath;
+
+        messages.Add(new ChatMessage("AI", reply, imagePath));
 
         userMessage = string.Empty;
     }
@@ -68,13 +70,16 @@
     {
         public string Role { get; set; }
         public string Content { get; set; }
+        public string? PersonaImagePath { get; set; } // ← Add this
 
-        public ChatMessage(string role, string content)
+        public ChatMessage(string role, string content, string? imagePath = null)
         {
             Role = role;
             Content = content;
+            PersonaImagePath = imagePath;
         }
     }
+
 
     public class Persona
     {
