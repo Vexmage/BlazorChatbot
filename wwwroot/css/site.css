@@ -67,6 +67,12 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
+.bio {
+    font-size: 0.9rem;
+    color: #444;
+    margin-bottom: 0.75rem;
+}
+
 
 .chat-box {
     max-height: 400px;
@@ -94,6 +100,24 @@ a, .btn-link {
         background-color: #e0f7fa;
         text-align: left;
     }
+
+.persona-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.persona-card {
+    width: 250px;
+    padding: 1rem;
+    background-color: #fdfdfd;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
 
 .persona-image {
     width: 64px;
@@ -125,3 +149,14 @@ a, .btn-link {
 .navbar-brand img {
     vertical-align: middle;
 }
+
+.use-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+    .use-link:hover {
+        text-decoration: underline;
+    }
