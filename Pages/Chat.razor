@@ -1,6 +1,7 @@
 ﻿@page "/chat"
-@inject BlazorChatbot.Services.OpenAIChatService ChatService
 @using BlazorChatbot.Models
+@inject BlazorChatbot.Services.OpenAIChatService ChatService
+@inject BlazorChatbot.Services.IPersonaService PersonaService
 
 <h3>Chat with AI</h3>
 <p><strong>Current Persona:</strong> @currentPersonaName</p>
@@ -15,15 +16,12 @@
                     <img src="@msg.PersonaImagePath" alt="Persona" class="persona-image" />
                     <div class="persona-name">@msg.PersonaName</div>
                 </div>
-
             }
 
             <strong>@msg.Role:</strong> @msg.Content
         </div>
     }
 </div>
-
-
 
 <div class="input-row">
     <input @bind="userMessage" @bind:event="oninput" placeholder="Say something..." />
@@ -39,86 +37,55 @@
     }
 </select>
 
-
-
 @code {
     private string userMessage = string.Empty;
     private List<ChatMessage> messages = new();
+    private IReadOnlyList<Persona> personas = Array.Empty<Persona>();
 
     private string currentPersonaName = "Philosophy Professor (Balanced)";
+    private string currentPrompt = string.Empty;
 
+    protected override void OnInitialized()
+    {
+        personas = PersonaService.GetPersonas();
+
+        var defaultPersona = PersonaService.GetDefaultPersona();
+
+        if (defaultPersona is not null)
+        {
+            currentPrompt = defaultPersona.SystemPrompt;
+            currentPersonaName = defaultPersona.Name;
+        }
+    }
 
     private async Task SendMessage()
     {
-        if (string.IsNullOrWhiteSpace(userMessage)) return;
+        if (string.IsNullOrWhiteSpace(userMessage))
+            return;
 
         messages.Add(new ChatMessage("User", userMessage));
 
         var payload = new[]
         {
-        new ChatMessage("System", currentPrompt),
-        new ChatMessage("User", userMessage)
-    };
+            new ChatMessage("System", currentPrompt),
+            new ChatMessage("User", userMessage)
+        };
 
         var reply = await ChatService.SendMessageAsync(payload);
 
-        var persona = personas.FirstOrDefault(p => p.SystemPrompt == currentPrompt);
-        var imagePath = persona?.ImagePath;
+        var persona = PersonaService.GetPersonaByPrompt(currentPrompt);
 
         messages.Add(new ChatMessage("AI", reply, persona?.ImagePath, persona?.Name));
 
         userMessage = string.Empty;
     }
 
-
-
-
-    private string currentPrompt = "You are a thoughtful and precise philosophy professor who speaks in academic but approachable language. You reference classic thinkers like Aristotle, Kant, Wittgenstein, and occasionally indigenous or non-Western perspectives. Avoid slang, use careful distinctions, and speak with clarity and curiosity.";
-
-
-    private List<Persona> personas = new()
-{
-    new Persona
-    {
-        Name = "Philosophy Professor (Balanced)",
-        SystemPrompt = "You are a thoughtful and precise philosophy professor who speaks in academic but approachable language. You reference classic thinkers like Aristotle, Kant, Wittgenstein, and occasionally indigenous or non-Western perspectives. Avoid slang, use careful distinctions, and speak with clarity and curiosity.",
-        ImagePath = "images/personas/philosophy_professor.png"
-    },
-    new Persona
-    {
-        Name = "Analytic Philosopher",
-        SystemPrompt = "You are an analytic philosopher. You aim for logical clarity, clear definitions, and structured argument. Avoid metaphor and ambiguity. Use examples sparingly and always cite distinctions.",
-        ImagePath = "images/personas/analytic_philosopher.png"
-    },
-    new Persona
-    {
-        Name = "Continental Philosopher",
-        SystemPrompt = "You are a continental philosopher. Use poetic, metaphorical, and evocative language. Emphasize ambiguity, experience, critique of modernity, and the collapse of structure.",
-        ImagePath = "images/personas/continental_philosopher.png"
-    },
-    new Persona
-    {
-        Name = "Postcolonial Theorist",
-        SystemPrompt = "You are a philosophy professor grounded in postcolonial theory and indigenous knowledge systems. You challenge Eurocentric assumptions and explore relational, land-based, and decolonial worldviews.",
-        ImagePath = "images/personas/postcolonial_theorist.png"
-    },
-    new Persona
-    {
-        Name = "Wittgensteinian Monk",
-        SystemPrompt = "You are Wittgenstein-like: terse, deep, and aphoristic. You resist grand theories. You offer insight in short, almost cryptic statements.",
-        ImagePath = "images/personas/wittgensteinian_monk.png"
-    }
-};
-
     private void SetPersona(ChangeEventArgs e)
     {
         var selectedPrompt = e.Value?.ToString();
         currentPrompt = selectedPrompt ?? string.Empty;
 
-        var selected = personas.FirstOrDefault(p => p.SystemPrompt == selectedPrompt);
+        var selected = PersonaService.GetPersonaByPrompt(selectedPrompt);
         currentPersonaName = selected?.Name ?? "Unknown Persona";
     }
-
-
-
 }
