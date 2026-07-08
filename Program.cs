@@ -10,7 +10,7 @@ builder.Services.Configure<OpenAIOptions>(
     builder.Configuration.GetSection("OpenAI"));
 
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<OpenAIChatService>();
+builder.Services.AddScoped<IOpenAIChatService, OpenAIChatService>();
 builder.Services.AddScoped<IPersonaService, PersonaService>();
 
 var app = builder.Build();

@@ -6,7 +6,7 @@ using BlazorChatbot.Models;
 
 namespace BlazorChatbot.Services
 {
-    public class OpenAIChatService
+    public class OpenAIChatService : IOpenAIChatService
     {
         private readonly HttpClient _http;
         private readonly OpenAIOptions _options;
