@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using static BlazorChatbot.Pages.Chat;
+using BlazorChatbot.Models;
 
 namespace BlazorChatbot.Services
 {
@@ -47,13 +47,7 @@ namespace BlazorChatbot.Services
             }
         }
 
-        public class BioEntry
-        {
-            public string? Name { get; set; }
-            public string? Tribe { get; set; }
-            public string? Bio { get; set; }
-            public List<string>? Aliases { get; set; }
-        }
+
 
         private string? FindMatchingBio(string? userInput)
         {

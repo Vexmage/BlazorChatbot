@@ -1,5 +1,6 @@
 ﻿@page "/chat"
 @inject BlazorChatbot.Services.OpenAIChatService ChatService
+@using BlazorChatbot.Models
 
 <h3>Chat with AI</h3>
 <p><strong>Current Persona:</strong> @currentPersonaName</p>
@@ -70,30 +71,6 @@
     }
 
 
-    public class ChatMessage
-    {
-        public string Role { get; set; }
-        public string Content { get; set; }
-        public string? PersonaImagePath { get; set; }
-        public string? PersonaName { get; set; }
-
-        public ChatMessage(string role, string content, string? imagePath = null, string? personaName = null)
-        {
-            Role = role;
-            Content = content;
-            PersonaImagePath = imagePath;
-            PersonaName = personaName;
-        }
-    }
-
-
-
-    public class Persona
-    {
-        public string Name { get; set; }
-        public string SystemPrompt { get; set; }
-        public string ImagePath { get; set; }
-    }
 
 
     private string currentPrompt = "You are a thoughtful and precise philosophy professor who speaks in academic but approachable language. You reference classic thinkers like Aristotle, Kant, Wittgenstein, and occasionally indigenous or non-Western perspectives. Avoid slang, use careful distinctions, and speak with clarity and curiosity.";
