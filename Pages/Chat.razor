@@ -2,6 +2,7 @@
 @using BlazorChatbot.Models
 @inject BlazorChatbot.Services.IOpenAIChatService ChatService
 @inject BlazorChatbot.Services.IPersonaService PersonaService
+@inject BlazorChatbot.Services.IPhilosophicalRelevanceService RelevanceService
 
 <h3>Chat with AI</h3>
 <p><strong>Current Persona:</strong> @currentPersonaName</p>
@@ -63,21 +64,67 @@
         if (string.IsNullOrWhiteSpace(userMessage))
             return;
 
-        messages.Add(new ChatMessage("User", userMessage));
+        var submittedMessage = userMessage.Trim();
+
+        messages.Add(new ChatMessage("User", submittedMessage));
+
+        var assessment = RelevanceService.Assess(submittedMessage);
+
+        if (assessment.Classification != PhilosophicalRelevance.Relevant)
+        {
+            var localReply = assessment.Classification switch
+            {
+                PhilosophicalRelevance.Transformable
+                    => assessment.SuggestedReframing
+                        ?? "That could become a philosophical question, but it needs to be reframed.",
+
+                PhilosophicalRelevance.Uncertain
+                    => "I’m not yet sure what philosophical question you have in mind. Could you clarify the philosophical issue?",
+
+                _ => "That does not appear to be a philosophical question."
+            };
+
+            messages.Add(new ChatMessage(
+                "AI",
+                localReply,
+                personaName: "Philosobot"));
+
+            userMessage = string.Empty;
+            return;
+        }
 
         var payload = new[]
         {
             new ChatMessage("System", currentPrompt),
-            new ChatMessage("User", userMessage)
+            new ChatMessage("User", submittedMessage)
         };
-
-        var reply = await ChatService.SendMessageAsync(payload);
 
         var persona = PersonaService.GetPersonaByPrompt(currentPrompt);
 
-        messages.Add(new ChatMessage("AI", reply, persona?.ImagePath, persona?.Name));
+        try
+        {
+            var reply = await ChatService.SendMessageAsync(payload);
 
-        userMessage = string.Empty;
+            messages.Add(new ChatMessage(
+                "AI",
+                reply,
+                persona?.ImagePath,
+                persona?.Name));
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"OpenAI request error: {ex.Message}");
+
+            messages.Add(new ChatMessage(
+                "AI",
+                "The philosophical oracle is temporarily unavailable. Please try again later.",
+                persona?.ImagePath,
+                persona?.Name ?? "Philosobot"));
+        }
+        finally
+        {
+            userMessage = string.Empty;
+        }
     }
 
     private void SetPersona(ChangeEventArgs e)

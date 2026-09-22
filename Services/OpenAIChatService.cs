@@ -134,9 +134,18 @@ namespace BlazorChatbot.Services
             request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
             var response = await _http.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
             var json = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(
+                    $"OpenAI request failed: {(int)response.StatusCode} {response.StatusCode}");
+
+                Console.WriteLine(json);
+
+                throw new HttpRequestException(
+                    $"OpenAI request failed: {(int)response.StatusCode} {response.StatusCode}");
+            }
             using var doc = JsonDocument.Parse(json);
             return doc.RootElement
                       .GetProperty("choices")[0]

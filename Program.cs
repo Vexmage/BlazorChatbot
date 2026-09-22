@@ -12,6 +12,9 @@ builder.Services.Configure<OpenAIOptions>(
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IOpenAIChatService, OpenAIChatService>();
 builder.Services.AddScoped<IPersonaService, PersonaService>();
+builder.Services.AddScoped<
+    IPhilosophicalRelevanceService,
+    PhilosophicalRelevanceService>();
 
 var app = builder.Build();
 
